@@ -1,10 +1,16 @@
 ---
-- name: Ping all hosts in inventory
+- name: Create ansible-user
   hosts: all
-  become: false
-
+  become: true
+  vars:
+    username: ansible-user
+    password: abc123
   tasks:
-  - name: Ping hosts
-    ping:
+  - name: Create user
+    user:
+      name: "{{ username }}"
+      password: "{{ password | password_hash('sha512') }}"
+      shell: /bin/bash
+      createhome: yes
 
 
