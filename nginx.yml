@@ -1,25 +1,16 @@
 ---
-- name: Onboard hosts to Microsoft Defender for Endpoint
+- name: Install git and Python
   hosts: all
   become: true
 
   tasks:
-    - name: Check OS version
-      register: os_version
-      setup:
-        filter: ansible_distribution_major_version
+    - name: Install git
+      package:
+        name: git
+        state: latest
 
-    - name: Onboard hosts to Microsoft Defender for Endpoint
-      block:
-        - name: Download mdatp installation script
-          get_url:
-            url: https://raw.githubusercontent.com/microsoft/mdatp-powershell/main/scripts/New-MDATPInstallationScript.ps1
-            dest: /tmp/New-MDATPInstallationScript.ps1
-            mode: '0755'
+    - name: Install Python
+      package:
+        name: python
+        state: latest
 
-        - name: Run mdatp installation script
-          shell: |
-            powershell -ExecutionPolicy Bypass -File /tmp/New-MDATPInstallationScript.ps1
-          args:
-            warn: false
-          when: os_version['ansible_facts']['ansible_distribution_major_version'] == '10'
