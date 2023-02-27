@@ -1,32 +1,10 @@
 ---
-- name: Install Git and Python and display version information
+- name: Remove httpd from all hosts
   hosts: all
   become: true
 
   tasks:
-    - name: Install Git and Python
-      block:
-        - name: Install Git
-          yum:
-            name: git
-            state: latest
-
-        - name: Install Python
-          yum:
-            name: python
-            state: latest
-
-    - name: Display Git version
-      shell: git --version
-      register: git_version
-
-    - name: Display Python version
-      shell: python --version
-      register: python_version
-
-    - name: Print version information
-      debug:
-        msg: "{{ item.stdout }}"
-      with_items:
-        - "{{ git_version }}"
-        - "{{ python_version }}"
+    - name: Remove httpd
+      yum:
+        name: httpd
+        state: absent
