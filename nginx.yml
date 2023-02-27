@@ -1,26 +1,32 @@
 ---
-- name: Install Nginx on all hosts
+- name: Update httpd and start service
   hosts: all
   become: true
+
   tasks:
     - name: Check OS version
-      ansible.builtin.setup:
-        filter: ansible_distribution_release
       register: os_version
+      setup:
+        filter: ansible_distribution_major_version
 
-    - name: Install Nginx on Ubuntu
-      ansible.builtin.apt:
-        name: nginx
+    - name: Install httpd package
+      yum:
+        name: httpd
         state: latest
-      when: os_version['ansible_distribution_release'] == 'xenial'
+      when: os_version['ansible_facts']['ansible_distribution_major_version'] == '7'
 
-    - name: Install Nginx on CentOS
-      ansible.builtin.yum:
-        name: nginx
+    - name: Install httpd package
+      dnf:
+        name: httpd
         state: latest
-      when: os_version['ansible_distribution_release'] == 'centos'
+      when: os_version['ansible_facts']['ansible_distribution_major_version'] == '8'
 
-    - name: Start Nginx service
-      ansible.builtin.service:
-        name: nginx
+    - name: Start httpd service
+      service:
+        name: httpd
         state: started
+
+    - name: Echo message to index.html
+      lineinfile:
+        path: /var/www/html/index.html
+        line: "I LOVE ANSIBLE AUTOMATION"
