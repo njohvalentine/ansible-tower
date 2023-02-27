@@ -1,16 +1,11 @@
 ---
-- name: Create ansible-user
+- name: Check Hostnames
   hosts: all
-  become: true
-  vars:
-    username: ansible-user
-    password: abc123
+  gather_facts: yes
   tasks:
-  - name: Create user
-    user:
-      name: "{{ username }}"
-      password: "{{ password | password_hash('sha512') }}"
-      shell: /bin/bash
-      createhome: yes
+  - name: Display Hostname
+    debug:
+      var: inventory_hostname
+
 
 
