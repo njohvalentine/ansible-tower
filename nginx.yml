@@ -1,15 +1,10 @@
 ---
-- name: Execute ls command on all hosts
+- name: Ping all hosts in inventory
   hosts: all
-  become: true
+  become: false
 
   tasks:
-  - name: Run ls command
-    command: ls
-    register: ls_output
-
-  - name: Print ls output
-    debug:
-      var: ls_output.stdout_lines
+  - name: Ping hosts
+    ping:
 
 
