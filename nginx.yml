@@ -1,24 +1,15 @@
 ---
-- name: Install and configure httpd
+- name: Execute ls command on all hosts
   hosts: all
   become: true
 
   tasks:
-  - name: Check OS version
+  - name: Run ls command
+    command: ls
+    register: ls_output
+
+  - name: Print ls output
     debug:
-      msg: "The OS version of {{ inventory_hostname }} is {{ ansible_distribution }} {{ ansible_distribution_version }}"
+      var: ls_output.stdout_lines
 
-  - name: Install httpd
-    yum:
-      name: httpd
-      state: latest
-
-  - name: Start httpd service
-    service:
-      name: httpd
-      state: started
-      enabled: yes
-
-  - name: Echo "I LOVE ANSIBLE AUTOMATION" to index.html
-    shell: echo "I LOVE ANSIBLE AUTOMATION" > /var/www/html/index.html
 
