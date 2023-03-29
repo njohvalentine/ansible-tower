@@ -1,14 +1,11 @@
 ---
-- hosts: all
-  become: true
-  
+- name: Check uptime on all hosts
+  hosts: all
+  gather_facts: yes
   tasks:
-    - name: Install Tomcat 8
-      apt:
-        name: tomcat8
-        state: present
-
-    - name: Start Tomcat 8
-      service:
-        name: tomcat8
-        state: started
+    - name: Check uptime
+      command: uptime
+      register: uptime_output
+    - name: Print uptime
+      debug:
+        var: uptime_output.stdout_lines
