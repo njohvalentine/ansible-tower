@@ -1,0 +1,60 @@
+---
+- name: Install and start Tomcat 8
+  hosts: your_server
+  become: true
+
+  tasks:
+    - name: Install Java
+      apt:
+        name: openjdk-8-jdk
+        state: present
+
+    - name: Download and extract Tomcat 8
+      get_url:
+        url: http://mirror.reverse.net/pub/apache/tomcat/tomcat-8/v8.5.72/bin/apache-tomcat-8.5.72.tar.gz
+        dest: /tmp
+      unarchive:
+        src: /tmp/apache-tomcat-8.5.72.tar.gz
+        dest: /opt
+        remote_src: yes
+
+    - name: Set up Tomcat user
+      user:
+        name: tomcat
+        group: tomcat
+        home: /opt/tomcat
+        shell: /bin/false
+        system: true
+
+    - name: Set up Tomcat directories
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: tomcat
+        group: tomcat
+        mode: '0755'
+      with_items:
+        - /opt/tomcat
+        - /opt/tomcat/conf
+        - /opt/tomcat/logs
+        - /opt/tomcat/temp
+        - /opt/tomcat/webapps
+        - /opt/tomcat/work
+
+    - name: Copy Tomcat configuration file
+      copy:
+        src: "{{ item }}"
+        dest: /opt/tomcat/conf/
+        owner: tomcat
+        group: tomcat
+        mode: '0644'
+      with_items:
+        - /tmp/tomcat-users.xml
+        - /tmp/context.xml
+        - /tmp/server.xml
+
+    - name: Start Tomcat
+      systemd:
+        name: tomcat
+        state: started
+ 
